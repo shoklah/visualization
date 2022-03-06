@@ -3,20 +3,23 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 
-min = 20000
-max = 60000
+min = 0
+max = 72435
+random = 20000
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "", ["min=", "max="])
+    opts, args = getopt.getopt(sys.argv[1:], "r:", ["min=", "max=", "random="])
 except getopt.GetoptError as err:
     print(err)
-    print("USAGE:\npython visualization_2.py [--min 20000] [--max 60000]")
+    print("USAGE:\npython visualization_2.py [--min 0] [--max 72435] [-r --random 20000]")
     sys.exit(2)
 for o, a in opts:
     if o == "--min":
         min = int(a)
     elif o == "--max":
         max = int(a)
+    elif o in ("-r", "--random"):
+        random = int(a) 
     else:
         assert False, "unhandled option"
 
@@ -42,7 +45,9 @@ df = df[df['fuel type'] != 'Other']
 
 df = df[(df['ID'] > min) & (df['ID'] < max)]
 
-sns.scatterplot(x='year',
+df = df.sample(random)
+
+sns.scatterplot(x='mileage',
                 y='price',
                 data=df,
                 hue='brand',
