@@ -1,8 +1,24 @@
-import plotly.express as px
-import matplotlib
-import matplotlib.pyplot as plt
+import getopt, sys
 import seaborn as sns
+import matplotlib.pyplot as plt
 import pandas as pd
+
+min = 20000
+max = 60000
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "", ["min=", "max="])
+except getopt.GetoptError as err:
+    print(err)
+    print("USAGE:\npython visualization_2.py [--min 20000] [--max 60000]")
+    sys.exit(2)
+for o, a in opts:
+    if o == "--min":
+        min = int(a)
+    elif o == "--max":
+        max = int(a)
+    else:
+        assert False, "unhandled option"
 
 df = pd.read_csv('data.csv')
 
@@ -18,18 +34,19 @@ df = df[~((df['mpg'] < (mpg_Q1 - 1.5 * mpg_IQR)) | (df['mpg'] > (mpg_Q3 + 1.5 * 
 
 df = df[df['mileage'] < df['mileage'].quantile(0.999)]
 
-df = df[df['engineSize'] != 0]
+df = df[df['engine size'] != 0]
 df = df[df['tax'] != 0]
 
 df = df[df['transmission'] != 'Other']
-df = df[df['fuelType'] != 'Other']
+df = df[df['fuel type'] != 'Other']
 
-fig = plt.figure(figsize=(16,4))
-plt.subplot(1,3,1)
-sns.violinplot(x = 'transmission', y = 'price', data = df, palette = "winter")
-plt.subplot(1,3,2)
-sns.violinplot(x = 'fuelType', y = 'price', data = df, palette = "winter")
-plt.subplot(1,3,3)
-sns.violinplot(x = 'Brand', y = 'price', data = df, palette = "winter")
-plt.tight_layout()
+df = df[(df['ID'] > min) & (df['ID'] < max)]
+
+sns.scatterplot(x='year',
+                y='price',
+                data=df,
+                hue='brand',
+                size='engine size',
+                sizes=(40, 400),
+                alpha=.2)
 plt.show()
