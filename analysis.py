@@ -1,9 +1,8 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-quant = ["year", "price", "mileage", "tax", "mpg", "engineSize"]
+quant = ["year", "price", "mileage", "tax", "mpg", "engine size"]
 df = pd.read_csv('data.csv')
 fig, axs = plt.subplots(6,2, figsize=(20, 10))
 
@@ -27,7 +26,7 @@ df = df[~((df['mpg'] < (mpg_Q1 - 1.5 * mpg_IQR)) | (df['mpg'] > (mpg_Q3 + 1.5 * 
 
 df = df[df['mileage'] < df['mileage'].quantile(0.999)]
 
-df = df[df['engineSize'] != 0]
+df = df[df['engine size'] != 0]
 
 for index, col in enumerate(quant):
     sns.distplot(df[col], ax=axs[index, 1]).set_title(f"Cleaned data for {col}")
@@ -35,28 +34,35 @@ for index, col in enumerate(quant):
 
 fig = plt.figure(figsize=(16,4))
 plt.subplot(1,3,1)
-sns.violinplot(x = 'transmission', y = 'price', data = df, palette = "winter")
+sns.violinplot(x='transmission',
+               y='price',
+               data=df,
+               palette="winter")
 plt.subplot(1,3,2)
-sns.violinplot(x = 'fuelType', y = 'price', data = df, palette = "winter")
+sns.violinplot(x='fuel type',
+               y='price',
+               data=df,
+               palette="winter")
 plt.subplot(1,3,3)
-sns.violinplot(x = 'Make', y = 'price', data = df, palette = "winter")
+sns.violinplot(x='brand',
+               y='price',
+               data=df,
+               palette="winter")
 plt.tight_layout()
 
 df = df[df['transmission'] != 'Other']
-df = df[df['fuelType'] != 'Other']
+df = df[df['fuel type'] != 'Other']
 
 df_quant = df[quant]
 corr = df_quant.corr()
 f, ax = plt.subplots(figsize = (8, 6))
 
-sns.heatmap(
-    corr,
-    cmap="winter",
-    vmax=.3,
-    center=0,
-    square=True,
-    linewidths=.5,
-    cbar_kws={"shrink": .5},
-    annot=True
-)
+sns.heatmap(corr,
+            cmap="winter",
+            vmax=.3,
+            center=0,
+            square=True,
+            linewidths=.5,
+            cbar_kws={"shrink": .5},
+            annot=True)
 plt.show()
